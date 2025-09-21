@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { LoginForm } from './components/LoginForm';
 import { RegisterForm } from './components/RegisterForm';
-import { Dashboard } from './components/Dashboard';
+import { MainLayout } from './components/MainLayout';
 
 const AuthContainer = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -34,7 +34,7 @@ const AppContent = () => {
     );
   }
 
-  return user ? <Dashboard /> : <AuthContainer />;
+  return user ? <MainLayout /> : <AuthContainer />;
 };
 
 function App() {
