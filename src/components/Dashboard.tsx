@@ -104,3 +104,23 @@ export const Dashboard = () => {
     </div>
   );
 };
+
+import React from "react";
+import MusicPlayer from "./MusicPlayer";
+
+const Dashboard: React.FC = () => {
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <h1 className="text-2xl font-bold p-4">Dashboard</h1>
+
+      {/* Nội dung dashboard */}
+
+      {/* Player */}
+      <MusicPlayer />
+    </div>
+  );
+};
+
+export default Dashboard;
+
+
