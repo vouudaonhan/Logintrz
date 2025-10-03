@@ -13,7 +13,7 @@ const supabase = createClient(
 
 // API: trả về signed URL video (hết hạn sau 1h)
 app.get("/api/video", async (req, res) => {
-  const fileName = "song1.mp4"; // bạn có thể đổi thành query param
+  const fileName = "Chiyonoo.mp4"; // bạn có thể đổi thành query param
   const { data, error } = await supabase
     .storage
     .from("music")
