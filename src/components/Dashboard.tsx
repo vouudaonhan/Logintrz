@@ -1,6 +1,5 @@
 import { useAuth } from '../hooks/useAuth';
 import { LogOut, Shield, User, Mail, Calendar } from 'lucide-react';
-import MusicPlayer from "./MusicPlayer";
 
 export const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -40,7 +39,6 @@ export const Dashboard = () => {
             </div>
 
             <div className="p-8">
-              {/* Các khối UI bảo mật */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200">
                   <div className="flex items-center space-x-3 mb-4">
@@ -49,9 +47,7 @@ export const Dashboard = () => {
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900">Security Status</h3>
                   </div>
-                  <p className="text-green-700">
-                    Your session is secure with Supabase authentication and RLS policies.
-                  </p>
+                  <p className="text-green-700">Your session is secure with Supabase authentication and RLS policies.</p>
                 </div>
 
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200">
@@ -67,7 +63,6 @@ export const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Thông tin tài khoản */}
               <div className="bg-gray-50 rounded-xl p-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-6">Account Information</h3>
                 <div className="space-y-4">
@@ -91,7 +86,6 @@ export const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Tính năng bảo mật */}
               <div className="mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
                 <h4 className="font-medium text-yellow-800 mb-2">Security Features Active:</h4>
                 <ul className="text-sm text-yellow-700 space-y-1">
@@ -107,11 +101,6 @@ export const Dashboard = () => {
           </div>
         </div>
       </div>
-
-      {/* Thêm MusicPlayer dưới cùng */}
-      <MusicPlayer />
     </div>
   );
 };
-
-export default Dashboard;
