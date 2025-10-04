@@ -121,7 +121,7 @@ export const Dashboard = () => {
     } 
 
 </style>
-import bgVideo from "../assets/46c99f8934d4aaf0105e 2be19c909fbd.mp4";
+import bgVideo from "../assets/46c99f8934d4aaf0105e2be19c909fbd.mp4";
 
 function Dashboard() {
   return (
