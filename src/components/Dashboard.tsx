@@ -2,6 +2,9 @@ import { useAuth } from '../hooks/useAuth';
 import { LogOut, Shield, User, Mail, Calendar } from 'lucide-react';
 import MusicPlayer from "./MusicPlayer";
 
+// import video
+import bgVideo from "../assets/46c99f8934d4aaf0105e2be19c909fbd.mp4";
+
 export const Dashboard = () => {
   const { user, logout } = useAuth();
 
@@ -14,8 +17,15 @@ export const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen relative">
+      {/* Video nền */}
+      <video autoPlay muted loop playsInline className="video-bg">
+        <source src={bgVideo} type="video/mp4" />
+        Trình duyệt của bạn không hỗ trợ video background.
+      </video>
+
+      {/* Nội dung Dashboard */}
+      <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-8 py-6">
@@ -104,38 +114,12 @@ export const Dashboard = () => {
                 </ul>
               </div>
             </div>
+
+            {/* Thêm MusicPlayer dưới cùng */}
+            <MusicPlayer />
           </div>
         </div>
-      
-      
-  </div>
-<style>
- .video-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;  /* Tự căn chỉnh video vừa khung */
-      z-index: -1;        /* Cho video xuống dưới cùng */
-    } 
-
-</style>
-import bgVideo from "../assets/46c99f8934d4aaf0105e2be19c909fbd.mp4";
-
-function Dashboard() {
-  return (
-    <div>
-      <video autoPlay muted loop playsInline className="video-bg">
-        <source src={bgVideo} type="video/mp4" />
-        Trình duyệt của bạn không hỗ trợ video background.
-      </video>
-    </div>
-  );
-}
-      
-      {/* Thêm MusicPlayer dưới cùng */}
-      <MusicPlayer />
+      </div>
     </div>
   );
 };
