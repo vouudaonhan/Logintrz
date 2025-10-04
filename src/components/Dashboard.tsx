@@ -1,6 +1,6 @@
 import { useAuth } from '../hooks/useAuth';
 import { LogOut, Shield, User, Mail, Calendar } from 'lucide-react';
-import MusicPlayer from "./MusicPlayer";
+import MusicPlayer from "./MusicPlayer.tsx";
 
 // import video
 import bgVideo from "../assets/46c99f8934d4aaf0105e2be19c909fbd.mp4";
