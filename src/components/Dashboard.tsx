@@ -121,13 +121,18 @@ export const Dashboard = () => {
     } 
 
 </style>
- import bgVideo from "./src/46c99f8934d4aaf0105e2be19c909fbd.mp4"; 
+import bgVideo from "../assets/46c99f8934d4aaf0105e 2be19c909fbd.mp4";
 
-<video autoPlay muted loop playsInline className="video-bg">
-  <source src={46c99f8934d4aaf0105e2be19c909fbd.mp4} type="video/mp4" />
-  Trình duyệt của bạn không hỗ trợ video background.
-</video>
-      
+function Dashboard() {
+  return (
+    <div>
+      <video autoPlay muted loop playsInline className="video-bg">
+        <source src={bgVideo} type="video/mp4" />
+        Trình duyệt của bạn không hỗ trợ video background.
+      </video>
+    </div>
+  );
+}
       
       {/* Thêm MusicPlayer dưới cùng */}
       <MusicPlayer />
