@@ -106,8 +106,26 @@ export const Dashboard = () => {
             </div>
           </div>
         </div>
-      </div>
+      
+      
+  </div>
+<style>
+ .video-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;  /* Tự căn chỉnh video vừa khung */
+      z-index: -1;        /* Cho video xuống dưới cùng */
+    } 
 
+</style>
+        
+   <video autoplay muted loop playsinline class="video-bg">
+    <source src="video.mp4" type="video/mp4">
+    Trình duyệt của bạn không hỗ trợ video background.
+  </video>   
       {/* Thêm MusicPlayer dưới cùng */}
       <MusicPlayer />
     </div>
