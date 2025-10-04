@@ -121,11 +121,14 @@ export const Dashboard = () => {
     } 
 
 </style>
-        
-   <video autoplay muted loop playsinline class="video-bg">
-    <source src="video.mp4" type="video/mp4">
-    Trình duyệt của bạn không hỗ trợ video background.
-  </video>   
+ import bgVideo from "./src/46c99f8934d4aaf0105e2be19c909fbd.mp4"; 
+
+<video autoPlay muted loop playsInline className="video-bg">
+  <source src={46c99f8934d4aaf0105e2be19c909fbd.mp4} type="video/mp4" />
+  Trình duyệt của bạn không hỗ trợ video background.
+</video>
+      
+      
       {/* Thêm MusicPlayer dưới cùng */}
       <MusicPlayer />
     </div>
