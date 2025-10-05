@@ -1,6 +1,7 @@
 import { useAuth } from '../hooks/useAuth';
 import { LogOut, Shield, User, Mail, Calendar } from 'lucide-react';
 import '../index2.css';
+import bgVideo from '../assets/46c99f8934d4aaf0105e2be19c909fbd.mp4';
 
 export const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -23,7 +24,7 @@ export const Dashboard = () => {
         playsInline
         className="video-bg"
       >
-        <source src="/46c99f8934d4aaf0105e2be19c909fbd.mp4" type="video/mp4" />
+        <source src={bgVideo} type="video/mp4" />
         Trình duyệt của bạn không hỗ trợ video background.
       </video>
 
