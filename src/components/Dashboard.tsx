@@ -16,12 +16,11 @@ export const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen relative">
-      {/* Video nền */}
-      <video autoPlay muted loop playsInline className="video-bg">
-        <source src={bgVideo} type="video/mp4" />
-        Trình duyệt của bạn không hỗ trợ video background.
-      </video>
+  <video autoPlay muted loop playsInline preload="auto" className="video-bg">
+  <source src="/bg.mp4" type="video/mp4" />
+  Trình duyệt của bạn không hỗ trợ video background.
+</video>
+
 
       {/* Nội dung Dashboard */}
       <div className="container mx-auto px-4 py-8 relative z-10">
@@ -120,9 +119,5 @@ export const Dashboard = () => {
     </div>
   );
 };
-<video autoPlay muted loop playsInline preload="auto" className="video-bg">
-  <source src="/bg.mp4" type="video/mp4" />
-  Trình duyệt của bạn không hỗ trợ video background.
-</video>
 
 export default Dashboard;
