@@ -1,6 +1,58 @@
 import { useState, useEffect } from 'react';
 import { Bell, X, CheckCircle, AlertTriangle, Info, Clock } from 'lucide-react';
 
+import React from "react";
+
+const VideoBackground: React.FC = () => {
+  return (
+    <div style={{ position: "relative", width: "100%", height: "100vh", overflow: "hidden" }}>
+      {/* Video background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          zIndex: -1,
+        }}
+      >
+        <source
+          src="https://dl.dropboxusercontent.com/s/5z2aa8x6x8nijiz44g6s4/46c99f8934d4aaf0105e2be19c909fbd.mp4"
+          type="video/mp4"
+        />
+        Your browser does not support the video tag.
+      </video>
+
+      {/* Nội dung trên video */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          color: "white",
+          textAlign: "center",
+          top: "50%",
+          transform: "translateY(-50%)",
+        }}
+      >
+        <h1>Welcome to My Website</h1>
+        <p>Video background from Dropbox</p>
+      </div>
+    </div>
+  );
+};
+
+export default VideoBackground;
+
+
+
+
+
 interface Notification {
   id: string;
   type: 'success' | 'warning' | 'info' | 'error';
