@@ -120,5 +120,9 @@ export const Dashboard = () => {
     </div>
   );
 };
+<video autoPlay muted loop playsInline preload="auto" className="video-bg">
+  <source src="/bg.mp4" type="video/mp4" />
+  Trình duyệt của bạn không hỗ trợ video background.
+</video>
 
 export default Dashboard;
