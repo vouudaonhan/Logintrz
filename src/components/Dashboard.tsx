@@ -1,5 +1,6 @@
 import { useAuth } from '../hooks/useAuth';
 import { LogOut, Shield, User, Mail, Calendar } from 'lucide-react';
+import '../index2.css';
 
 export const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -13,9 +14,24 @@ export const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="relative min-h-screen">
+      {/* Video Background */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="video-bg"
+      >
+        <source src="/46c99f8934d4aaf0105e2be19c909fbd.mp4" type="video/mp4" />
+        Trình duyệt của bạn không hỗ trợ video background.
+      </video>
+
+      {/* Overlay để làm tối và dễ đọc content */}
+      <div className="video-overlay"></div>
+
       {/* Nội dung Dashboard */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-8 py-6">
