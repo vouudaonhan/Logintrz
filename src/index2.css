@@ -1,9 +1,27 @@
+/* Tailwind base (cần nếu bạn dùng TailwindCSS) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Video nền */
 .video-bg {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  z-index: -1;
+  object-fit: cover;   /* giúp video luôn lấp đầy màn hình */
+  z-index: -1;         /* để video nằm dưới nội dung */
+  pointer-events: none; /* tránh click nhầm vào video */
+}
+
+/* Thêm lớp phủ mờ nếu muốn chữ dễ đọc hơn */
+.video-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3); /* lớp đen mờ */
+  z-index: 0;
 }
