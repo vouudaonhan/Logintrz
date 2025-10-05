@@ -17,7 +17,7 @@ export const Dashboard = () => {
 
   return (
   <video autoPlay muted loop playsInline preload="auto" className="video-bg">
-  <source src="/bg.mp4" type="video/mp4" />
+  <source src="/46c99f8934d4aaf0105e2be19c909fbd.mp4" type="video/mp4" />
   Trình duyệt của bạn không hỗ trợ video background.
 </video>
 
