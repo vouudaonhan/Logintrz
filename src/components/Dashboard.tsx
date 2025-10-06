@@ -33,7 +33,7 @@ export const Dashboard = () => {
       {/* Nội dung Dashboard */}
       <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div className="bg-white/70 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-8 py-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
