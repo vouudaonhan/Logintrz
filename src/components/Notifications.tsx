@@ -336,4 +336,5 @@ const App: React.FC = () => {
     </VideoBackground>
   );
 };
+export { Notifications };
 export default App;
