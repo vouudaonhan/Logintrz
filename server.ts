@@ -1,22 +1,43 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import chatRouter from "./api/chat";
+const express = require('express');
+const { OpenAI } = require('openai');
+const cors = require('cors');
+require('dotenv').config();
 
-
-dotenv.config();
 const app = express();
+const port = 5000;
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Gắn route chat
-app.use("/api/chat", chatRouter);
-
-// Test route (tùy chọn)
-app.get("/", (req, res) => {
-  res.send("✅ Server đang hoạt động!");
+// Khởi tạo OpenAI client cho OpenRouter
+const openai = new OpenAI({
+  baseURL: 'https://openrouter.ai/api/v1',
+  apiKey: process.env.OPENROUTER_API_KEY,  // Lưu key trong .env
 });
 
-// Chạy server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server đang chạy tại cổng ${PORT}`));
+// Route cho chat completion
+app.post('/api/chat', async (req, res) => {
+  const { message } = req.body;
+
+  try {
+    const completion = await openai.chat.completions.create({
+      model: 'google/gemma-2-9b-it:free',  // Gemma-2-9B free tier
+      messages: [
+        { role: 'user', content: message }
+      ],
+      max_tokens: 150,
+      temperature: 0.7,
+    });
+
+    const response = completion.choices[0].message.content;
+    res.json({ response });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Lỗi khi gọi API' });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server chạy tại http://localhost:${port}`);
+});
