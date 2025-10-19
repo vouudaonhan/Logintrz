@@ -1,23 +1,23 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 
-// Định nghĩa type cho message để tránh lỗi 'never'
+// Interface cho Message để TypeScript biết cấu trúc (tránh type 'never')
 interface Message {
   role: 'user' | 'bot';
   content: string;
 }
 
-interface NotificationsProps {
-  // Nếu component này nhận props từ parent, thêm ở đây. Nếu không, bỏ qua.
-}
+// Props nếu cần (có thể bỏ nếu không dùng)
+interface NotificationsProps {}
 
 const Notifications: React.FC<NotificationsProps> = () => {
-  const [messages, setMessages] = useState<Message[]>([]);  // Thêm type <Message[]>
-  const [input, setInput] = useState<string>('');  // Thêm type cho input
+  // State với type explicit
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);  // Type cho ref
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll xuống tin nhắn mới
+  // Auto-scroll
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -26,22 +26,24 @@ const Notifications: React.FC<NotificationsProps> = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSubmit = async (e: React.FormEvent) => {  // Type cho event
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim() || loading) return;
 
-    const userMessage: Message = { role: 'user', content: input };  // Explicit type
-    setMessages(prev => [...prev, userMessage]);
+    const userMessage: Message = { role: 'user', content: input };
+    setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setLoading(true);
 
     try {
-      const res = await axios.post<{ response: string }>('/api/chat', { message: input });  // Type response
+      // Gọi backend (điều chỉnh URL nếu deploy, ví dụ: process.env.REACT_APP_API_URL)
+      const res = await axios.post<{ response: string }>('/api/chat', { message: input });
       const botMessage: Message = { role: 'bot', content: res.data.response };
-      setMessages(prev => [...prev, botMessage]);
+      setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
-      const errorMessage: Message = { role: 'bot', content: 'Xin lỗi, có lỗi xảy ra. Hãy thử lại!' };
-      setMessages(prev => [...prev, errorMessage]);
+      console.error('API Error:', error); // Log để debug
+      const errorMessage: Message = { role: 'bot', content: 'Xin lỗi, có lỗi xảy ra. Hãy thử lại sau!' };
+      setMessages((prev) => [...prev, errorMessage]);
     }
     setLoading(false);
   };
@@ -58,22 +60,22 @@ const Notifications: React.FC<NotificationsProps> = () => {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 mt-20">
-            <p>Chào bạn! Hãy bắt đầu cuộc trò chuyện bằng cách nhập tin nhắn bên dưới.</p>
+            <p>Bắt đầu trò chuyện bằng cách nhập tin nhắn bên dưới nhé!</p>
           </div>
         ) : (
-          messages.map((msg: Message, index: number) => (  // Explicit types
+          messages.map((msg: Message, index: number) => (
             <div
               key={index}
               className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow-md ${
                   msg.role === 'user'
                     ? 'bg-blue-500 text-white rounded-br-none'
-                    : 'bg-white text-gray-800 shadow-md rounded-bl-none'
+                    : 'bg-white text-gray-800 rounded-bl-none'
                 }`}
               >
-                {msg.content}
+                <p>{msg.content}</p> {/* Đảm bảo .content đầy đủ */}
               </div>
             </div>
           ))
@@ -97,7 +99,7 @@ const Notifications: React.FC<NotificationsProps> = () => {
           <input
             type="text"
             value={input}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}  // Type event
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
             placeholder="Nhập câu hỏi của bạn..."
             className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={loading}
