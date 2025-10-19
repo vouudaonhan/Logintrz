@@ -7,8 +7,7 @@ interface Message {
 }
 
 const Notifications: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]); // ✅ FIX lỗi TS2339
-  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<Message[]>([]); // ✅ thêm kiểu dữ liệu rõ ràng  const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
