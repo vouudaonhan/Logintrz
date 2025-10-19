@@ -107,5 +107,7 @@ function App() {
     </div>
   );
 }
-
+ 
 export default App;
+export { Notifications };
+export default Notifications;
