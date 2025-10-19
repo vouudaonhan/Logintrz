@@ -1,11 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 
-function App() {
-  const [messages, setMessages] = useState([]);  // Lịch sử chat: [{role: 'user/bot', content: '...'}]
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const messagesEndRef = useRef(null);  // Ref cho auto-scroll
+// Định nghĩa type cho message để tránh lỗi 'never'
+interface Message {
+  role: 'user' | 'bot';
+  content: string;
+}
+
+interface NotificationsProps {
+  // Nếu component này nhận props từ parent, thêm ở đây. Nếu không, bỏ qua.
+}
+
+const Notifications: React.FC<NotificationsProps> = () => {
+  const [messages, setMessages] = useState<Message[]>([]);  // Thêm type <Message[]>
+  const [input, setInput] = useState<string>('');  // Thêm type cho input
+  const [loading, setLoading] = useState<boolean>(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);  // Type cho ref
 
   // Auto-scroll xuống tin nhắn mới
   const scrollToBottom = () => {
@@ -16,21 +26,21 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {  // Type cho event
     e.preventDefault();
     if (!input.trim() || loading) return;
 
-    const userMessage = { role: 'user', content: input };
+    const userMessage: Message = { role: 'user', content: input };  // Explicit type
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setLoading(true);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/chat', { message: input });
-      const botMessage = { role: 'bot', content: res.data.response };
+      const res = await axios.post<{ response: string }>('/api/chat', { message: input });  // Type response
+      const botMessage: Message = { role: 'bot', content: res.data.response };
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
-      const errorMessage = { role: 'bot', content: 'Xin lỗi, có lỗi xảy ra. Hãy thử lại!' };
+      const errorMessage: Message = { role: 'bot', content: 'Xin lỗi, có lỗi xảy ra. Hãy thử lại!' };
       setMessages(prev => [...prev, errorMessage]);
     }
     setLoading(false);
@@ -51,7 +61,7 @@ function App() {
             <p>Chào bạn! Hãy bắt đầu cuộc trò chuyện bằng cách nhập tin nhắn bên dưới.</p>
           </div>
         ) : (
-          messages.map((msg, index) => (
+          messages.map((msg: Message, index: number) => (  // Explicit types
             <div
               key={index}
               className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
@@ -87,7 +97,7 @@ function App() {
           <input
             type="text"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}  // Type event
             placeholder="Nhập câu hỏi của bạn..."
             className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={loading}
@@ -106,6 +116,6 @@ function App() {
       </form>
     </div>
   );
-}
+};
 
-export default App;
+export default Notifications;
