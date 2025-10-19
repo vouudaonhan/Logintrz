@@ -86,4 +86,5 @@ const Notifications: React.FC = () => {
   );
 };
 
-export default Notifications;
+// Named export để match import trong MainLayout
+export { Notifications };
