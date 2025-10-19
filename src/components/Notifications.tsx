@@ -112,5 +112,4 @@ const Notifications: React.FC = () => {
   );
 };
 
-export { Notifications };
 export default Notifications;
