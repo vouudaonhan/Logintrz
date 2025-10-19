@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Navigation } from "./Navigation";
 import { Dashboard } from "./Dashboard";
-import Notifications from "./Notifications";  // Đảm bảo export default ở Notifications.tsx
+import { Notifications } from "./Notifications";  // Đảm bảo export default ở Notifications.tsx
 import { AccountManagement } from "./AccountManagement";
 import { 
   FileText, 
