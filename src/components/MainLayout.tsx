@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Navigation } from "./Navigation";
 import { Dashboard } from "./Dashboard";
-import Notifications from "./Notifications";
+import Notifications from "./Notifications";  // Đảm bảo export default ở Notifications.tsx
 import { AccountManagement } from "./AccountManagement";
 import { 
   FileText, 
@@ -13,7 +13,14 @@ import {
   Construction
 } from 'lucide-react';
 
-const PlaceholderPage = ({ title, icon: Icon, description }: { title: string; icon: any; description: string }) => (
+// Type cho PlaceholderPage props (đã có, nhưng explicit hơn)
+interface PlaceholderPageProps {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;  // Type cho Lucide icons
+  description: string;
+}
+
+const PlaceholderPage: React.FC<PlaceholderPageProps> = ({ title, icon: Icon, description }) => (
   <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
     <div className="bg-white rounded-2xl shadow-2xl p-12 text-center max-w-md">
       <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -29,10 +36,20 @@ const PlaceholderPage = ({ title, icon: Icon, description }: { title: string; ic
   </div>
 );
 
-export const MainLayout = () => {
-  const [currentPage, setCurrentPage] = useState('notifications');
+// Type cho currentPage (union các giá trị có thể)
+type PageType = 'dashboard' | 'notifications' | 'account' | 'documents' | 'analytics' | 'messages' | 'calendar' | 'security' | 'settings' | 'help';
 
-  const renderPage = () => {
+// Type cho Navigation props (dựa trên usage; adjust nếu Navigation có type riêng)
+interface NavigationProps {
+  currentPage: PageType;
+  onPageChange: (page: PageType) => void;
+  unreadNotifications: number;
+}
+
+export const MainLayout: React.FC = () => {
+  const [currentPage, setCurrentPage] = useState<PageType>('notifications');
+
+  const renderPage = (): React.ReactNode => {  // Explicit return type
     switch (currentPage) {
       case 'dashboard':
         return <Dashboard />;
