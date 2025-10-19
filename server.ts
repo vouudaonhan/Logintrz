@@ -1,22 +1,21 @@
 import express from "express";
-import chatRoute from "./api/chat.ts";
+import cors from "cors";
 import dotenv from "dotenv";
-import path from "path";
+import chatRouter from "./api/chat.ts";
 
 dotenv.config();
-
 const app = express();
+app.use(cors());
 app.use(express.json());
 
-// Route API
-app.use("/api/chat", chatRoute);
+// Gắn route chat
+app.use("/api/chat", chatRouter);
 
-// Nếu bạn muốn build frontend React trong cùng dự án:
-app.use(express.static(path.join(process.cwd(), "dist")));
-
-app.get("*", (_, res) => {
-  res.sendFile(path.join(process.cwd(), "dist", "index.html"));
+// Test route (tùy chọn)
+app.get("/", (req, res) => {
+  res.send("✅ Server đang hoạt động!");
 });
 
+// Chạy server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server chạy tại http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server đang chạy tại cổng ${PORT}`));
