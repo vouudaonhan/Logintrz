@@ -1,80 +1,111 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
 
-interface Message {
-  role: "user" | "assistant";
-  content: string;
-}
-
-const Chat: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
+function App() {
+  const [messages, setMessages] = useState([]);  // Lịch sử chat: [{role: 'user/bot', content: '...'}]
+  const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);  // Ref cho auto-scroll
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
-    const userMsg: Message = { role: "user", content: input };
-    setMessages((prev) => [...prev, userMsg]);
-    setInput("");
+  // Auto-scroll xuống tin nhắn mới
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!input.trim() || loading) return;
+
+    const userMessage = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
     setLoading(true);
 
     try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input }),
-      });
-      const data = await res.json();
-      const reply =
-        data.choices?.[0]?.message?.content || "Không có phản hồi từ máy chủ.";
-      setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "❌ Không thể kết nối đến máy chủ." },
-      ]);
-    } finally {
-      setLoading(false);
+      const res = await axios.post('http://localhost:5000/api/chat', { message: input });
+      const botMessage = { role: 'bot', content: res.data.response };
+      setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      const errorMessage = { role: 'bot', content: 'Xin lỗi, có lỗi xảy ra. Hãy thử lại!' };
+      setMessages(prev => [...prev, errorMessage]);
     }
+    setLoading(false);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-700 to-purple-800 text-white">
-      <h1 className="text-3xl font-bold mb-4 drop-shadow-lg">🤖 Chatbot GLM-4.6</h1>
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
+      {/* Header */}
+      <header className="bg-blue-600 text-white p-4 text-center shadow-lg">
+        <h1 className="text-2xl font-bold">Chat với Gemma-2-9B</h1>
+        <p className="text-blue-100 mt-1">Hỏi đáp thông minh miễn phí!</p>
+      </header>
 
-      <div className="w-full max-w-md bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg p-4 border border-white/20">
-        <div className="h-96 overflow-y-auto border border-white/20 p-3 mb-3 rounded-md bg-black/30">
-          {messages.map((msg, i) => (
+      {/* Chat History */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.length === 0 ? (
+          <div className="text-center text-gray-500 mt-20">
+            <p>Chào bạn! Hãy bắt đầu cuộc trò chuyện bằng cách nhập tin nhắn bên dưới.</p>
+          </div>
+        ) : (
+          messages.map((msg, index) => (
             <div
-              key={i}
-              className={`my-2 ${
-                msg.role === "user" ? "text-blue-300 text-right" : "text-gray-100"
-              }`}
+              key={index}
+              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <b>{msg.role === "user" ? "Bạn: " : "Bot: "}</b>
-              {msg.content}
+              <div
+                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                  msg.role === 'user'
+                    ? 'bg-blue-500 text-white rounded-br-none'
+                    : 'bg-white text-gray-800 shadow-md rounded-bl-none'
+                }`}
+              >
+                {msg.content}
+              </div>
             </div>
-          ))}
-          {loading && <p className="text-center text-gray-400">Đang phản hồi...</p>}
-        </div>
+          ))
+        )}
+        {loading && (
+          <div className="flex justify-start">
+            <div className="bg-white px-4 py-2 rounded-lg shadow-md rounded-bl-none">
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                <span className="text-gray-500 text-sm">Đang suy nghĩ...</span>
+              </div>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
 
-        <div className="flex">
+      {/* Input Form */}
+      <form onSubmit={handleSubmit} className="bg-white p-4 shadow-lg border-t">
+        <div className="flex space-x-2">
           <input
-            className="flex-1 border border-white/30 bg-transparent text-white placeholder-gray-300 rounded-md px-3 py-2 mr-2 focus:outline-none"
+            type="text"
             value={input}
-            placeholder="Nhập tin nhắn..."
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            placeholder="Nhập câu hỏi của bạn..."
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={loading}
           />
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-            onClick={sendMessage}
+            type="submit"
+            disabled={loading || !input.trim()}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
           >
-            Gửi
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+            <span>Gửi</span>
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
-};
+}
 
-export default Chat;
+export default App;
