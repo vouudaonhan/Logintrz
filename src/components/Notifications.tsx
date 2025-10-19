@@ -7,7 +7,7 @@ interface Message {
 }
 
 const Notifications: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]); // ✅ KHẮC PHỤC LỖI Ở ĐÂY
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
