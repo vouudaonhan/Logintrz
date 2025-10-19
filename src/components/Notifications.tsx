@@ -34,7 +34,7 @@ const Notifications: React.FC = () => {
       const botMessage: Message = { role: 'bot', content: res.data.response };
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
-      const errorMessage: Message = { role: 'bot', content: 'Lỗi API! Thử lại nhé.' };
+      const errorMessage: Message = { role: 'bot', content: 'Lỗi! Thử lại.' };
       setMessages(prev => [...prev, errorMessage]);
     }
     setLoading(false);
@@ -44,15 +44,15 @@ const Notifications: React.FC = () => {
     <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
       <header className="bg-blue-600 text-white p-4 text-center shadow-lg">
         <h1 className="text-2xl font-bold">Chat Gemma-2-9B</h1>
-        <p className="text-blue-100 mt-1">Hỏi AI miễn phí!</p>
+        <p className="text-blue-100 mt-1">AI miễn phí!</p>
       </header>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (
-          <div className="text-center text-gray-500 mt-20">Bắt đầu chat đi!</div>
+          <div className="text-center text-gray-500 mt-20">Bắt đầu chat!</div>
         ) : (
           messages.map((msg, index) => (
             <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-xs px-4 py-2 rounded-lg shadow-md ${msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-white text-gray-800'}`}>
+              <div className={`max-w-xs px-4 py-2 rounded-lg shadow-md ${msg.role === 'user' ? 'bg-blue-500 text-white rounded-br-none' : 'bg-white text-gray-800 rounded-bl-none'}`}>
                 {msg.content}
               </div>
             </div>
@@ -60,8 +60,8 @@ const Notifications: React.FC = () => {
         )}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-white px-4 py-2 rounded-lg shadow-md">
-              <span className="text-sm text-gray-500">Đang load...</span>
+            <div className="bg-white px-4 py-2 rounded-lg shadow-md rounded-bl-none">
+              <span className="text-sm text-gray-500">Đang suy nghĩ...</span>
             </div>
           </div>
         )}
@@ -73,11 +73,11 @@ const Notifications: React.FC = () => {
             type="text"
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder="Nhập tin..."
-            className="flex-1 p-3 border rounded-l-lg focus:outline-none"
+            placeholder="Nhập câu hỏi..."
+            className="flex-1 p-3 border rounded-l focus:outline-none"
             disabled={loading}
           />
-          <button type="submit" disabled={loading} className="bg-blue-600 text-white px-6 py-3 rounded-r-lg">
+          <button type="submit" disabled={loading} className="bg-blue-600 text-white px-6 py-3 rounded-r">
             Gửi
           </button>
         </div>
