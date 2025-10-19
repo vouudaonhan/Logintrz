@@ -86,5 +86,6 @@ const Notifications: React.FC = () => {
   );
 };
 
-// Named export để match import trong MainLayout
+// Cuối file Notifications.tsx
 export { Notifications };
+export default Notifications;
