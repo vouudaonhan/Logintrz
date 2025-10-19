@@ -1,11 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 
-function App() {
-  const [messages, setMessages] = useState([]);  // Lịch sử chat: [{role: 'user/bot', content: '...'}]
+interface Message {
+  role: 'user' | 'bot';
+  content: string;
+}
+
+const Notifications: React.FC = () => {
+  const [messages, setMessages] = useState<Message[]>([]); // ✅ FIX lỗi TS2339
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const messagesEndRef = useRef(null);  // Ref cho auto-scroll
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll xuống tin nhắn mới
   const scrollToBottom = () => {
@@ -16,21 +21,21 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || loading) return;
 
-    const userMessage = { role: 'user', content: input };
+    const userMessage: Message = { role: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setLoading(true);
 
     try {
       const res = await axios.post('http://localhost:5000/api/chat', { message: input });
-      const botMessage = { role: 'bot', content: res.data.response };
+      const botMessage: Message = { role: 'bot', content: res.data.response };
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
-      const errorMessage = { role: 'bot', content: 'Xin lỗi, có lỗi xảy ra. Hãy thử lại!' };
+      const errorMessage: Message = { role: 'bot', content: 'Xin lỗi, có lỗi xảy ra. Hãy thử lại!' };
       setMessages(prev => [...prev, errorMessage]);
     }
     setLoading(false);
@@ -106,8 +111,7 @@ function App() {
       </form>
     </div>
   );
-}
- 
-export default App;
+};
+
 export { Notifications };
 export default Notifications;
