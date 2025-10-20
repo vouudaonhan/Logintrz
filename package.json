@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-  "start": "vite preview --host 0.0.0.0 --port $PORT"
+    "start": "vite preview --host 0.0.0.0 --port $PORT"
   },
   "dependencies": {
     "axios": "^1.7.7",
@@ -17,7 +17,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
-  "devDependenci"axios": "^1.7.7",es": {
+  "devDependencies": {
     "@eslint/js": "^9.9.0",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
