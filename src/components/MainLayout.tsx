@@ -114,11 +114,11 @@ export const MainLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navigation 
-        currentPage={currentPage} 
-        onPageChange={setCurrentPage}
-        unreadNotifications={2}
-      />
+     <Navigation 
+  currentPage={currentPage} 
+  onPageChange={(page: PageType) => setCurrentPage(page)}
+  unreadNotifications={2}
+   />
       {renderPage()}
     </div>
   );
