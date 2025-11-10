@@ -1,7 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Navigation } from "./Navigation";
 import { Dashboard } from "./Dashboard";
-import { Notifications } from "./Notifications";  // Đảm bảo export default ở Notifications.tsx
+import { Notifications } from "./Notifications";
 import { AccountManagement } from "./AccountManagement";
 import { 
   FileText, 
@@ -13,16 +13,34 @@ import {
   Construction
 } from 'lucide-react';
 
-// Type cho PlaceholderPage props (đã có, nhưng explicit hơn)
+// ===== Type định nghĩa =====
 interface PlaceholderPageProps {
   title: string;
-  icon: React.ComponentType<{ className?: string }>;  // Type cho Lucide icons
+  icon: React.ComponentType<{ className?: string }>;
   description: string;
 }
 
+type PageType = 
+  | 'dashboard'
+  | 'notifications'
+  | 'account'
+  | 'documents'
+  | 'analytics'
+  | 'messages'
+  | 'calendar'
+  | 'security'
+  | 'settings'
+  | 'help';
+
+interface MainLayoutProps {
+  children?: React.ReactNode;
+  onClose?: () => void;
+}
+
+// ===== Component PlaceholderPage =====
 const PlaceholderPage: React.FC<PlaceholderPageProps> = ({ title, icon: Icon, description }) => (
-  <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
-    <div className="bg-white rounded-2xl shadow-2xl p-12 text-center max-w-md">
+  <div className="min-h-[60vh] bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
+    <div className="bg-white rounded-2xl shadow-2xl p-10 text-center max-w-md">
       <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
         <Icon className="w-10 h-10 text-white" />
       </div>
@@ -36,25 +54,18 @@ const PlaceholderPage: React.FC<PlaceholderPageProps> = ({ title, icon: Icon, de
   </div>
 );
 
-// Type cho currentPage (union các giá trị có thể)
-type PageType = 'dashboard' | 'notifications' | 'account' | 'documents' | 'analytics' | 'messages' | 'calendar' | 'security' | 'settings' | 'help';
+// ===== Component MainLayout =====
+export const MainLayout: React.FC<MainLayoutProps> = ({ children, onClose }) => {
+  const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
 
-// Type cho Navigation props (dựa trên usage; adjust nếu Navigation có type riêng)
-interface NavigationProps {
-  currentPage: PageType;
-  onPageChange: (page: PageType) => void;
-  unreadNotifications: number;
-}
+  const renderPage = (): React.ReactNode => {
+    if (children) return children;
 
-export const MainLayout: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<PageType>('notifications');
-
-  const renderPage = (): React.ReactNode => {  // Explicit return type
     switch (currentPage) {
       case 'dashboard':
         return <Dashboard />;
       case 'notifications':
-        return <Notifications />;
+        return <Notifications onClose={onClose} />;
       case 'account':
         return <AccountManagement />;
       case 'documents':
@@ -113,13 +124,44 @@ export const MainLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-     <Navigation 
-  currentPage={currentPage} 
-  onPageChange={(page: PageType) => setCurrentPage(page)}
-  unreadNotifications={2}
-   />
-      {renderPage()}
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      {/* Header */}
+      <header className="bg-white shadow-md sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-purple-600">My App</h1>
+
+          {/* Navigation */}
+          <Navigation
+            currentPage={currentPage}
+            onPageChange={(page: PageType) => setCurrentPage(page)}
+            unreadNotifications={2}
+          />
+
+          {/* Nút đóng (nếu có onClose) */}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+            >
+              Đóng
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* Nội dung chính */}
+      <main className="flex-grow max-w-7xl mx-auto px-4 py-8">
+        {renderPage()}
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t mt-8">
+        <div className="max-w-7xl mx-auto px-4 py-6 text-center text-gray-600">
+          <p>&copy; 2025 My App. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 };
+
+export default MainLayout;
