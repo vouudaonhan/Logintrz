@@ -1,151 +1,221 @@
-import React, { useState, useRef, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useRef, useEffect } from 'react';
 
-// ----------------------------
-// Interface định nghĩa
-// ----------------------------
 interface Message {
-  role: "user" | "bot";
+  role: 'user' | 'assistant';
   content: string;
 }
 
-// ----------------------------
-// Component chính
-// ----------------------------
-const Notifications: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]); // ✅ đã khai báo kiểu
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+const Chatbot: React.FC = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiKey, setApiKey] = useState('');
+  const [isApiKeySet, setIsApiKeySet] = useState(false);
+  const [tempApiKey, setTempApiKey] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Tự động scroll xuống khi có tin nhắn mới
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  useEffect(() => {
+    const savedKey = localStorage.getItem('openrouter_api_key');
+    if (savedKey) {
+      setApiKey(savedKey);
+      setIsApiKeySet(true);
+      setMessages([{
+        role: 'assistant',
+        content: 'Xin chào! Tôi đã sẵn sàng trò chuyện với bạn. Hãy hỏi tôi bất cứ điều gì!'
+      }]);
+    } else {
+      setMessages([{
+        role: 'assistant',
+        content: 'Xin chào! Vui lòng cấu hình API key để bắt đầu trò chuyện.'
+      }]);
+    }
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // ----------------------------
-  // Gửi tin nhắn
-  // ----------------------------
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || loading) return;
-
-    const userMessage: Message = { role: "user", content: input };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setLoading(true);
-
-    try {
-      // ⚙️ Gọi API (bạn có thể thay localhost bằng API Render của bạn)
-      const res = await axios.post("/api/chat", { message: input });
-      const botMessage: Message = {
-        role: "bot",
-        content: res.data.response || "Không có phản hồi từ máy chủ.",
-      };
-      setMessages((prev) => [...prev, botMessage]);
-    } catch (error) {
-      const errorMessage: Message = {
-        role: "bot",
-        content: "❌ Lỗi kết nối! Hãy thử lại sau.",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    }
-    setLoading(false);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // ----------------------------
-  // Giao diện
-  // ----------------------------
-  return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
-      {/* Header */}
-      <header className="bg-blue-600 text-white p-4 text-center shadow-lg">
-        <h1 className="text-2xl font-bold">💬 Chat với Gemma-2-9B</h1>
-        <p className="text-blue-100 mt-1">AI hội thoại miễn phí!</p>
-      </header>
+  const saveApiKey = () => {
+    if (!tempApiKey.trim()) {
+      alert('Vui lòng nhập API key!');
+      return;
+    }
+    localStorage.setItem('openrouter_api_key', tempApiKey);
+    setApiKey(tempApiKey);
+    setIsApiKeySet(true);
+    setTempApiKey('');
+    setMessages([{
+      role: 'assistant',
+      content: 'API key đã được lưu! Bạn có thể bắt đầu trò chuyện ngay bây giờ.'
+    }]);
+  };
 
-      {/* Chat content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.length === 0 ? (
-          <div className="text-center text-gray-500 mt-20">
-            <p>Xin chào! Hãy nhập tin nhắn để bắt đầu trò chuyện 💡</p>
+  const sendMessage = async () => {
+    if (!input.trim() || isLoading) return;
+
+    const userMessage: Message = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': window.location.href,
+          'X-Title': 'AI Chatbot'
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.0-flash-exp:free',
+          messages: [...messages, userMessage]
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error.message || 'Có lỗi xảy ra');
+      }
+
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content: data.choices[0].message.content
+      };
+
+      setMessages(prev => [...prev, assistantMessage]);
+    } catch (error) {
+      const errorMessage: Message = {
+        role: 'assistant',
+        content: `Lỗi: ${error instanceof Error ? error.message : 'Không xác định'}. Vui lòng kiểm tra API key hoặc thử lại.`
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-600 to-purple-900 p-4">
+      <div className="w-full max-w-4xl h-[90vh] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-purple-600 to-purple-800 text-white p-6 text-center">
+          <h1 className="text-2xl font-bold">🤖 AI Chatbot - OpenRouter</h1>
+        </div>
+
+        {/* API Key Setup */}
+        {!isApiKeySet && (
+          <div className="p-6 bg-gray-50 border-b border-gray-200">
+            <input
+              type="password"
+              value={tempApiKey}
+              onChange={(e) => setTempApiKey(e.target.value)}
+              placeholder="Nhập OpenRouter API Key của bạn"
+              className="w-full px-4 py-3 border-2 border-purple-600 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <button
+              onClick={saveApiKey}
+              className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors font-medium"
+            >
+              Lưu API Key
+            </button>
+            <div className="mt-3 text-sm text-gray-600">
+              📌 Lấy API key miễn phí tại:{' '}
+              <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" className="text-purple-600 underline">
+                openrouter.ai/keys
+              </a>
+              <br />
+              🔒 API key được lưu trong trình duyệt của bạn
+            </div>
           </div>
-        ) : (
-          messages.map((msg, index) => (
+        )}
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+          {messages.map((message, index) => (
             <div
               key={index}
-              className={`flex ${
-                msg.role === "user" ? "justify-end" : "justify-start"
-              }`}
+              className={`mb-4 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}
             >
               <div
-                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                  msg.role === "user"
-                    ? "bg-blue-500 text-white rounded-br-none"
-                    : "bg-white text-gray-800 shadow-md rounded-bl-none"
+                className={`max-w-[70%] px-6 py-4 rounded-2xl ${
+                  message.role === 'user'
+                    ? 'bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded-br-sm'
+                    : 'bg-white text-gray-800 shadow-md rounded-bl-sm'
                 }`}
               >
-                {msg.content}
+                {message.content}
               </div>
             </div>
-          ))
-        )}
-        {loading && (
-          <div className="flex justify-start">
-            <div className="bg-white px-4 py-2 rounded-lg shadow-md rounded-bl-none">
-              <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-                <span className="text-gray-500 text-sm">Đang phản hồi...</span>
+          ))}
+          
+          {isLoading && (
+            <div className="flex justify-start mb-4">
+              <div className="bg-white px-6 py-4 rounded-2xl shadow-md">
+                <div className="flex gap-2">
+                  <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                  <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                </div>
               </div>
             </div>
+          )}
+          
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input */}
+        <div className="p-6 bg-white border-t border-gray-200">
+          <div className="flex gap-3">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Nhập tin nhắn..."
+              disabled={!isApiKeySet || isLoading}
+              className="flex-1 px-6 py-4 border-2 border-gray-300 rounded-full focus:outline-none focus:border-purple-600 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            />
+            <button
+              onClick={sendMessage}
+              disabled={!isApiKeySet || isLoading || !input.trim()}
+              className="px-8 py-4 bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded-full hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-medium"
+            >
+              Gửi
+            </button>
           </div>
-        )}
-        <div ref={messagesEndRef} />
+        </div>
       </div>
 
-      {/* Input */}
-      <form onSubmit={handleSubmit} className="bg-white p-4 border-t shadow-md">
-        <div className="flex space-x-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Nhập câu hỏi..."
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled={loading}
-          />
-          <button
-            type="submit"
-            disabled={loading || !input.trim()}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-              />
-            </svg>
-            <span>Gửi</span>
-          </button>
-        </div>
-      </form>
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 };
 
-// ----------------------------
-// Export
-// ----------------------------
-export { Notifications };
-export default Notifications;
+export default Chatbot;
