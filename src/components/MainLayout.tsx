@@ -1,8 +1,11 @@
+// File: src/components/MainLayout.tsx
+
 import React, { useState } from "react";
 import { Navigation } from "./Navigation";
 import { Dashboard } from "./Dashboard";
 import { Notifications } from "./Notifications";
 import { AccountManagement } from "./AccountManagement";
+import { Chatbot } from "./Chatbot";
 import { 
   FileText, 
   BarChart3, 
@@ -119,7 +122,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, onClose }) => 
           />
         );
       default:
-        return <Notifications />;
+        return <Dashboard />;
     }
   };
 
@@ -150,7 +153,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, onClose }) => 
       </header>
 
       {/* Nội dung chính */}
-      <main className="flex-grow max-w-7xl mx-auto px-4 py-8">
+      <main className="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
         {renderPage()}
       </main>
 
@@ -160,6 +163,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, onClose }) => 
           <p>&copy; 2025 My App. All rights reserved.</p>
         </div>
       </footer>
+
+      {/* Chatbot - Floating button ở góc phải dưới */}
+      <Chatbot />
     </div>
   );
 };
